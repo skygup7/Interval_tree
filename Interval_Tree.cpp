@@ -20,8 +20,10 @@ struct node
     node* right;
     node* p;
     int key;
+    int color;
 };
 node* root;
+node* nill;
 
 void rotate_left(node T,node* x)
 {
@@ -29,7 +31,7 @@ void rotate_left(node T,node* x)
     x->right=y->left;
     y->left->p=x;
     y->p=x->p;
-    if(x->p==NULL)
+    if(x->p==nill)
         root=y;
     else if(x==(x->p)->left)
         (x->p)->left=y;
@@ -44,7 +46,7 @@ void rotate_right(node T,node* x)
     x->left=y->right;
     y->right->p=x;
     y->p=x->p;
-    if(x->p==NULL)
+    if(x->p==nill)
         root=y;
     else if(x==(x->p)->left)
         (x->p)->left=y;
@@ -53,9 +55,83 @@ void rotate_right(node T,node* x)
     y->right=x;
     x->p=y;
 }
-void insrt(node T,node x)
+void fix_insert(node T,node* z)
+{
+    node* y;
+    while(z->color==0)
+    {
+        if(z->p==z->p->p->left)
+        {
+            y=z->p->p->right;
+            if(y->color==0)
+            {
+                z->p->color=1;
+                y->color=1;
+                z->p->p->color=0;
+                z=z->p->p;
+            }
+            else
+            {
+                if(z==z->p->right)
+                {
+                    z=z->p;
+                    rotate_left(T,z);
+                }
+                z->p->color=1;
+                z->p->p->color=0;
+                rotate_right(T,z->p->p);
+            }
+        }
+        else
+        {
+            y=z->p->p->left;
+            if(y->color==0)
+            {
+                z->p->color=1;
+                y->color=1;
+                z->p->p->color=0;
+                z=z->p->p;
+            }
+            else
+            {
+                if(z==z->p->left)
+                {
+                    z=z->p;
+                    rotate_right(T,z);
+                }
+                z->p->color=1;
+                z->p->p->color=0;
+                rotate_left(T,z->p->p);
+            }
+        }
+    }
+    root->color=1;
+}
+void fix_delete(node T,node* z)
 {
 
+}
+void insrt(node T,node* z)
+{
+    node* y=nill;
+    node* x=root;
+    while(x)
+    {
+        y=x;
+        if(z->key<x->key)
+            x=x->left;
+        else
+            x=x->right;
+    }
+    z->p=y;
+    if(y==nill)
+        root=z;
+    else if(z->key<y->key)
+        y->left=z;
+    else
+        y->right=z;
+    z->color=0;
+    fix_insert(T,z);
 }
 void delet(node T, node x)
 {
@@ -80,19 +156,26 @@ int main()
         interval[1][i]=y;
     }
     node T;
-    T.left=NULL;
-    T.right=NULL;
-    T.p=NULL;
+    T.left=nill;
+    T.right=nill;
+    T.p=nill;
+    T.color=1;
     T.key=interval[0][0];
+    nill->left=NULL;
+    nill->right=NULL;
+    nill->p=NULL;
+    nill->color=1;
+    nill->key=-1;
     root = &T;
     forp(i,1,n)
     {
         node x;
-        x.left=NULL;
-        x.right=NULL;
-        x.p=NULL;
+        x.left=nill;
+        x.right=nill;
+        x.p=nill;
+        x.color=0;
         x.key=interval[0][i];
-        insrt(T,x);
+        insrt(T,&x);
     }
     node z;
     forp(i,0,10)
