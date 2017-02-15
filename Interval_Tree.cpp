@@ -14,6 +14,35 @@ using namespace std;
 #define forn(i,a,n) for(int i=(a);i>=(n);i--)
 #define csl ios_base::sync_with_stdio(false); cin.tie(NULL)
 
+struct node
+{
+    node* left;
+    node* right;
+    int key;
+};
+node* root;
+
+void rotate_left(node T,node x)
+{
+
+}
+void rotate_right(node T,node x)
+{
+
+}
+void insrt(node T,node x)
+{
+
+}
+void delet(node T, node x)
+{
+
+}
+node serch(node T,int i)
+{
+    return x;
+}
+
 int main()
 {
     csl;
@@ -25,6 +54,28 @@ int main()
         cin>>x>>y;
         interval[0][i]=x;
         interval[1][i]=y;
+    }
+    node T;
+    T.key=interval[0][0];
+    root = &T;
+    forp(i,1,n)
+    {
+        node x;
+        x.key=interval[0][i];
+        insrt(T,x);
+    }
+    node z;
+    forp(i,0,10)
+    {
+        z=serch(T,i);
+        if(z.key>=0)
+            cout<<z.key<<endl;
+        else
+            cout<<"key not found"<<endl;
+    }
+    forp(i,0,10)
+    {
+        delet(T,serch(T,i));
     }
 }
 
