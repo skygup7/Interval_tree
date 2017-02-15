@@ -18,17 +18,40 @@ struct node
 {
     node* left;
     node* right;
+    node* p;
     int key;
 };
 node* root;
 
-void rotate_left(node T,node x)
+void rotate_left(node T,node* x)
 {
-
+    node* y=(x->right);
+    x->right=y->left;
+    y->left->p=x;
+    y->p=x->p;
+    if(x->p==NULL)
+        root=y;
+    else if(x==(x->p)->left)
+        (x->p)->left=y;
+    else
+        (x->p)->right=y;
+    y->left=x;
+    x->p=y;
 }
-void rotate_right(node T,node x)
+void rotate_right(node T,node* x)
 {
-
+    node* y=(x->left);
+    x->left=y->right;
+    y->right->p=x;
+    y->p=x->p;
+    if(x->p==NULL)
+        root=y;
+    else if(x==(x->p)->left)
+        (x->p)->left=y;
+    else
+        (x->p)->right=y;
+    y->right=x;
+    x->p=y;
 }
 void insrt(node T,node x)
 {
@@ -40,6 +63,7 @@ void delet(node T, node x)
 }
 node serch(node T,int i)
 {
+    node x;
     return x;
 }
 
@@ -56,11 +80,17 @@ int main()
         interval[1][i]=y;
     }
     node T;
+    T.left=NULL;
+    T.right=NULL;
+    T.p=NULL;
     T.key=interval[0][0];
     root = &T;
     forp(i,1,n)
     {
         node x;
+        x.left=NULL;
+        x.right=NULL;
+        x.p=NULL;
         x.key=interval[0][i];
         insrt(T,x);
     }
