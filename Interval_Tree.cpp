@@ -14,8 +14,8 @@ using namespace std;
 #define forn(i,a,n) for(int i=(a);i>=(n);i--)
 #define csl ios_base::sync_with_stdio(false); cin.tie(NULL)
 
-struct node
-{
+struct node///              Defined structure for the Red-Black Tree. Augmentation is done by adding high and low instead of a key and
+{          ///              max_high, which stores the maximum limit of the intervals of the subtree including the node itself.
     node* left;
     node* right;
     node* p;
@@ -27,7 +27,7 @@ struct node
 node* root;
 node* nill;
 
-node* successor(node* z)
+node* successor(node* z)/// Finds node with next big value of the node x.
 {
     node* y;
     if(z->right!=nill)
@@ -44,9 +44,8 @@ node* successor(node* z)
     }
     return y;
 }
-void rotate_left(node T,node* x)
+void rotate_left(node T,node* x)/// Function for rotating left on the node x.
 {
-    //cout<<x->p->low<<endl;
     node* y=(x->right);
     x->right=y->left;
     y->left->p=x;
@@ -60,7 +59,7 @@ void rotate_left(node T,node* x)
     y->left=x;
     x->p=y;
 }
-void rotate_right(node T,node* x)
+void rotate_right(node T,node* x)/// Function for rotating right on the node x.
 {
     node* y=(x->left);
     x->left=y->right;
@@ -75,26 +74,20 @@ void rotate_right(node T,node* x)
     y->right=x;
     x->p=y;
 }
-void fix_insert(node T,node* z)
+void fix_insert(node T,node* z)/// Fixes issues for 2 continuous red nodes so that the property of Red-Black tree does not get violated.
 {
-    //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
     node* y;
-    //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
     while(z->p->color==0)
     {
-        //cout<<"check insert fix"<<endl;
-        //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
         if(z->p==z->p->p->left)
         {
             y=z->p->p->right;
-            //cout<<"check insert fix 1 "<<endl;
             if(y->color==0)
             {
                 z->p->color=1;
                 y->color=1;
                 z->p->p->color=0;
                 z=z->p->p;
-                //cout<<"check insert fix 1 2"<<endl;
             }
             else
             {
@@ -106,18 +99,13 @@ void fix_insert(node T,node* z)
                 z->p->p->color=0;
                 z->p->color=1;
                 rotate_right(T,z->p->p);
-                //cout<<"check insert fix 1 2"<<endl;
             }
-            //cout<<"check insert fix 1"<<endl;
         }
         else
         {
-            //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
             y=z->p->p->left;
-            //cout<<"check insert fix 2"<<endl;
             if(y->color==0)
             {
-                //cout<<"check insert fix 2 1"<<endl;
                 z->p->color=1;
                 y->color=1;
                 z->p->p->color=0;
@@ -125,7 +113,6 @@ void fix_insert(node T,node* z)
             }
             else
             {
-                //cout<<"check insert fix 2 2"<<endl;
                 if(z==z->p->left)
                 {
                     z=z->p;
@@ -134,17 +121,12 @@ void fix_insert(node T,node* z)
                 (z->p)->p->color=0;
                 z->p->color=1;
                 rotate_left(T,z->p->p);
-                //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
-                //cout<<" special "<<z->p->p->low<<endl;
             }
-            //cout<<"check insert fix 2"<<endl;
         }
     }
     root->color=1;
-    //cout<<z->p->low<<" "<<z->low<<endl;
-    //cout<<root->low<<" "<<endl;
 }
-void fix_delete(node T,node* x)
+void fix_delete(node T,node* x)/// Fixing function of after Delete for resolving constant-black height problem
 {
     node* y;
     node* w;
@@ -215,8 +197,8 @@ void fix_delete(node T,node* x)
     }
     x->color=1;
 }
-void insrt(node T,node* z)
-{
+void insrt(node T,node* z)/// Basic Insert function for inserting intervals. It insert just like a BST with keys as lower limit of intervals.
+{                         /// Fixes are made in accordance to maintain the properties of Red-Black tree.
     node* y=nill;
     node* x=root;
     while(x!=nill)
@@ -227,9 +209,7 @@ void insrt(node T,node* z)
         else
             x=x->right;
     }
-    //cout<<z<<" "<<y<<" "<<y->p<<endl;
     z->p=y;
-    //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
     if(y==nill)
         root=z;
     else if(z->low<y->low)
@@ -237,12 +217,10 @@ void insrt(node T,node* z)
     else
         y->right=z;
     z->color=0;
-    //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
-    //cout<<"check insert"<<endl;
     fix_insert(T,z);
 }
-void delet(node T, node* z)
-{
+void delet(node T, node* z)/// Basic deletion function which deletes as normal BST, except that some fixes are needed to be done in order
+{                          /// to maintain the properties of Red-Back Trees.
     node* y;
     node* x;
     if(z->left==nill || z->right==nill)
@@ -274,7 +252,7 @@ void delet(node T, node* z)
     if(y->color==1)
         fix_delete(T,x);
 }
-node* serch(node T,int i,int j)
+node* serch(node T,int i,int j)///s\Search function for searching an interval
 {
     node* x=root;
     while(x!=nill && (j<x->low || i>x->high))
@@ -284,17 +262,16 @@ node* serch(node T,int i,int j)
         else
             x=x->right;
     }
-    //cout<<x->low<<" "<<x->high<<endl;
     return x;
 }
-int maintenance(node* x)
+int maintenance(node* x)///Maintenance function to maintain the augmented structure of the red-black tree. (max_high) to store highest limit
 {
     if(x==nill)
         return 0;
     x->max_high=max(max(maintenance(x->left),maintenance(x->right)),x->high);
     return x->max_high;
 }
-void traverse(node* x)
+void traverse(node* x) ///In-order Traversal of the Red-Black Tree
 {
     if(x==nill)
         return;
@@ -303,7 +280,7 @@ void traverse(node* x)
     traverse(x->right);
 }
 
-int main()
+int main()    ///Main Function for the program. Its quite a bit interactive.
 {
     csl;
     int n,x,y;
@@ -399,49 +376,5 @@ int main()
         }
         else
             cout<<"Kindly limit your expectations ....XD.... :P"<<endl;
-////        cout<<"construction done"<<endl;
-////        maintenance(root);
-////        cout<<"Maintenance done"<<endl;
-////        node* z;
-////        forp(i,0,10)
-////        {
-////            z=serch(T,i,i);
-////            if(z->low>=0)
-////                cout<<z->low<<" "<<z->high<<endl;
-////            else
-////                cout<<"Interval not found"<<endl;
-////        }
-////        cout<<"search done"<<endl;
-////        forp(i,1,4)
-////        {
-////            delet(T,serch(T,i,i));
-////        }
-////        cout<<"deletion done"<<endl;
-////        maintenance(root);
-////        cout<<"Maintenance done"<<endl;
-////        forp(i,3,5)
-////        {
-////            z=serch(T,i,i);
-////            if(z->low>=0)
-////                cout<<z->low<<" "<<z->high<<endl;
-////            else
-////                cout<<"Interval not found"<<endl;
-////        }
-
     }
 }
-
-/*
-11
-1 1
-2 2
-3 3
-4 4
-5 5
-6 6
-7 7
-8 8
-9 9
-10 10
-11 11
-*/
