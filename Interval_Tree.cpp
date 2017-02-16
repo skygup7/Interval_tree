@@ -19,7 +19,8 @@ struct node
     node* left;
     node* right;
     node* p;
-    int key;
+    int low;
+    int high;
     int color;
 };
 node* root;
@@ -44,12 +45,13 @@ node* successor(node* z)
 }
 void rotate_left(node T,node* x)
 {
+    //cout<<x->p->low<<endl;
     node* y=(x->right);
     x->right=y->left;
     y->left->p=x;
     y->p=x->p;
     if(x->p==nill)
-        root=y;
+        {root=y;}
     else if(x==(x->p)->left)
         (x->p)->left=y;
     else
@@ -74,18 +76,24 @@ void rotate_right(node T,node* x)
 }
 void fix_insert(node T,node* z)
 {
+    //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
     node* y;
-    while(z->color==0)
+    //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
+    while(z->p->color==0)
     {
+        //cout<<"check insert fix"<<endl;
+        //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
         if(z->p==z->p->p->left)
         {
             y=z->p->p->right;
+            //cout<<"check insert fix 1 "<<endl;
             if(y->color==0)
             {
                 z->p->color=1;
                 y->color=1;
                 z->p->p->color=0;
                 z=z->p->p;
+                //cout<<"check insert fix 1 2"<<endl;
             }
             else
             {
@@ -94,16 +102,21 @@ void fix_insert(node T,node* z)
                     z=z->p;
                     rotate_left(T,z);
                 }
-                z->p->color=1;
                 z->p->p->color=0;
+                z->p->color=1;
                 rotate_right(T,z->p->p);
+                //cout<<"check insert fix 1 2"<<endl;
             }
+            //cout<<"check insert fix 1"<<endl;
         }
         else
         {
+            //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
             y=z->p->p->left;
+            //cout<<"check insert fix 2"<<endl;
             if(y->color==0)
             {
+                //cout<<"check insert fix 2 1"<<endl;
                 z->p->color=1;
                 y->color=1;
                 z->p->p->color=0;
@@ -111,18 +124,24 @@ void fix_insert(node T,node* z)
             }
             else
             {
+                //cout<<"check insert fix 2 2"<<endl;
                 if(z==z->p->left)
                 {
                     z=z->p;
                     rotate_right(T,z);
                 }
+                (z->p)->p->color=0;
                 z->p->color=1;
-                z->p->p->color=0;
                 rotate_left(T,z->p->p);
+                //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
+                //cout<<" special "<<z->p->p->low<<endl;
             }
+            //cout<<"check insert fix 2"<<endl;
         }
     }
     root->color=1;
+    //cout<<z->p->low<<" "<<z->low<<endl;
+    //cout<<root->low<<" "<<endl;
 }
 void fix_delete(node T,node* x)
 {
@@ -202,19 +221,23 @@ void insrt(node T,node* z)
     while(x!=nill)
     {
         y=x;
-        if(z->key<x->key)
+        if(z->low<x->low)
             x=x->left;
         else
             x=x->right;
     }
+    //cout<<z<<" "<<y<<" "<<y->p<<endl;
     z->p=y;
+    //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
     if(y==nill)
         root=z;
-    else if(z->key<y->key)
+    else if(z->low<y->low)
         y->left=z;
     else
         y->right=z;
     z->color=0;
+    //cout<<z<<" "<<z->p<<" "<<z->p->p<<endl;
+    //cout<<"check insert"<<endl;
     fix_insert(T,z);
 }
 void delet(node T, node* z)
@@ -238,7 +261,7 @@ void delet(node T, node* z)
         y->p->right=x;
     if(y!=z)
     {
-        z->key=y->key;
+        z->low=y->low;
     }
     if(y->color==1)
         fix_delete(T,x);
@@ -262,36 +285,43 @@ int main()
         interval[1][i]=y;
     }
     node T;
-    T.left=nill;
-    T.right=nill;
-    T.p=nill;
-    T.color=1;
-    T.key=interval[0][0];
+    nill=new struct node;
     nill->left=NULL;
     nill->right=NULL;
     nill->p=NULL;
     nill->color=1;
-    nill->key=-1;
+    nill->low=-1;
+    nill->high=-1;
+    T.left=nill;
+    T.right=nill;
+    T.p=nill;
+    T.color=1;
+    T.low=interval[0][0];
+    T.high=interval[1][0];
+
     root = &T;
     forp(i,1,n)
     {
-        node x;
-        x.left=nill;
-        x.right=nill;
-        x.p=nill;
-        x.color=0;
-        x.key=interval[0][i];
-        insrt(T,&x);
+        node* x=new struct node;
+        x->left=nill;
+        x->right=nill;
+        x->p=nill;
+        x->color=0;
+        x->low=interval[0][i];
+        x->high=interval[1][i];
+        //cout<<"check"<<endl;
+        insrt(T,x);
     }
+    cout<<"construction done"<<endl;
     node z;
-    forp(i,0,10)
-    {
-        z=serch(T,i);
-        if(z.key>=0)
-            cout<<z.key<<endl;
-        else
-            cout<<"key not found"<<endl;
-    }
+//    forp(i,0,10)
+//    {
+//        z=serch(T,i);
+//        if(z.low>=0)
+//            cout<<z.low<<endl;
+//        else
+//            cout<<"Interval not found"<<endl;
+//    }
     node ptr;
     forp(i,0,10)
     {
@@ -300,4 +330,17 @@ int main()
     }
 }
 
-
+/*
+11
+1 1
+2 2
+3 3
+4 4
+5 5
+6 6
+7 7
+8 8
+9 9
+10 10
+11 11
+*/
