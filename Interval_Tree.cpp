@@ -22,6 +22,7 @@ struct node
     int low;
     int high;
     int color;
+    int max_high;
 };
 node* root;
 node* nill;
@@ -245,7 +246,7 @@ void delet(node T, node* z)
     node* y;
     node* x;
     if(z->left==nill || z->right==nill)
-        y=z;
+        {y=z;}
     else
         y=successor(z);
     if(y->left!=nill)
@@ -266,16 +267,32 @@ void delet(node T, node* z)
     if(y->color==1)
         fix_delete(T,x);
 }
-node serch(node T,int i)
+node* serch(node T,int i,int j)
 {
-    node x;
+    node* x=root;
+    while(x!=nill && (j<x->low || i>x->high))
+    {
+        if(x->left!=nill && x->left->max_high>=i)
+            x=x->left;
+        else
+            x=x->right;
+    }
+    //cout<<x->low<<" "<<x->high<<endl;
     return x;
+}
+int maintenance(node* x)
+{
+    if(x==nill)
+        return 0;
+    x->max_high=max(max(maintenance(x->left),maintenance(x->right)),x->high);
+    return x->max_high;
 }
 
 int main()
 {
     csl;
     int n,x,y;
+    int loop=1;
     cin>>n;
     int interval[2][n];
     forp(i,0,n)
@@ -313,20 +330,32 @@ int main()
         insrt(T,x);
     }
     cout<<"construction done"<<endl;
-    node z;
-//    forp(i,0,10)
-//    {
-//        z=serch(T,i);
-//        if(z.low>=0)
-//            cout<<z.low<<endl;
-//        else
-//            cout<<"Interval not found"<<endl;
-//    }
-    node ptr;
+    maintenance(root);
+    cout<<"Maintenance done"<<endl;
+    node* z;
     forp(i,0,10)
     {
-        ptr=serch(T,i);
-        delet(T,&(ptr));
+        z=serch(T,i,i);
+        if(z->low>=0)
+            cout<<z->low<<" "<<z->high<<endl;
+        else
+            cout<<"Interval not found"<<endl;
+    }
+    cout<<"search done"<<endl;
+    forp(i,1,4)
+    {
+        delet(T,serch(T,i,i));
+    }
+    cout<<"deletion done"<<endl;
+    maintenance(root);
+    cout<<"Maintenance done"<<endl;
+    forp(i,3,5)
+    {
+        z=serch(T,i,i);
+        if(z->low>=0)
+            cout<<z->low<<" "<<z->high<<endl;
+        else
+            cout<<"Interval not found"<<endl;
     }
 }
 
