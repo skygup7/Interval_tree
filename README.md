@@ -3,7 +3,7 @@ Implementation of Interval Tee
 
 
 ##Sample Test Case
-
+```cpp
 1     ///insertion
 11    ///number of insertions
 1 1   ///Test cases
@@ -30,3 +30,4 @@ Implementation of Interval Tee
 2     ///Number of searches
 3 3   ///Test cases               interval not found
 4 4   ///                         found 4 4
+```
